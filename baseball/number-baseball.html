@@ -1,84 +1,101 @@
 <html>
+
 <head>
   <meta charset="utf-8">
   <title>숫자야구</title>
 </head>
+
 <body>
-<form id="form">
-  <input type="text" id="input">
-  <button>확인</button>
-</form>
-<div id="logs"></div>
-<script>
-  const $input = document.querySelector('#input');
-  const $form = document.querySelector('#form');
-  const $logs = document.querySelector('#logs');
+  <form id="form">
+    <input type="text" id="input">
+    <button>확인</button>
+  </form>
+  <div id="logs"></div>
+  <script>
+    const $input = document.querySelector('#input');
+    const $form = document.querySelector('#form');
+    const $logs = document.querySelector('#logs');
 
-  const numbers = [];
-  for(let n = 0; n < 9; n++) {
-    numbers.push(n + 1);
-  }
+    const numbers = [];
+    for (let n = 0; n < 9; n++) {
+      numbers.push(n + 1);
+    }
 
-   const answer = [];
+    const answer = [];
     for (let n = 0; n <= 3; n += 1) {
-    const index = Math.floor(Math.random() * numbers.length); // numbers 길이에 따라
-    answer.push(numbers[index]);
-    numbers.splice(index, 1);
+      const index = Math.floor(Math.random() * numbers.length); // numbers 길이에 따라
+      answer.push(numbers[index]);
+      numbers.splice(index, 1);
     }
     console.log(answer);
 
-  // 답이 형식에 맞는가?
-  const tries = [];
-  function checkInput(input) {
-    if (input.length !== 4) { // 길이 확인
+    // 답이 형식에 맞는가?
+    const tries = [];
+    function checkInput(input) {
+      if (input.length !== 4) { // 길이 확인
         return alert('4자리 숫자를 입력해주세요.');
-    } 
-    if (new Set(input).size !== 4) { // 중복 확인
+      }
+      if (new Set(input).size !== 4) { // 중복 확인
         return alert('중복되지 않게 입력해주세요.');
-    }
-    if (tries.includes(input)) { // 이미 시도한 값인가?
+      }
+      if (tries.includes(input)) { // 이미 시도한 값인가?
         return alert('이미 시도한 값입니다.');
+      }
+      return true;
     }
-    return true;
-  }
 
-  $form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const value = $input.value; // event.target[0].value
-    $input.value = '';
+    function defeated() {
+      const message = document.createTextNode(`패배! 정답은 ${answer.join('')}`);
+      $logs.appendChild(message);
+    }
 
-    const valid = checkInput(value);
-    if (!valid) { 
+    let out = 0;
+    $form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const value = $input.value; // event.target[0].value
+      $input.value = '';
+
+      const valid = checkInput(value);
+      if (!valid) {
         return;
-    }
-    if (answer.join('') === value) { // 홈런?
+      }
+      if (answer.join('') === value) { // 홈런?
         $logs.textContent = '홈런!';
         return;
-    }
-    if (tries.length >= 9) {
-        const message = document.createTextNode(`패배! 정답은 ${answer.join('')}`);
-        $logs.appendChild(message);
+      }
+      if (tries.length >= 9) {
+        defeated();
         return;
-    }
+      }
 
-    // 몇 스트라이크 몇 볼?
-    console.log(answer);
-    let strike = 0;
-    let ball = 0;
-    answer.forEach((element, i) => {
+      // 몇 스트라이크 몇 볼?
+      console.log(answer);
+      let strike = 0;
+      let ball = 0;
+      answer.forEach((element, i) => {
         let idx = value.indexOf(element);
         if (idx < 0) return;
         if (i === idx) {
-            strike++;
+          strike++;
         } else {
-            ball++;
+          ball++;
         }
+      });
+
+      if (strike === 0 && ball === 0) {
+        out++;
+        $logs.append(`${value}: ${out}아웃`, document.createElement('br'));
+      } else {
+        $logs.append(`${value}:${strike} 스트라이크 ${ball} 볼`, document.createElement('br'));
+      }
+      if (out === 3) {
+        defeated();
+        return;
+      }
+      tries.push(value);
+
     });
-
-    $logs.append(`${value}: ${strike} 스트라이크 ${ball} 볼`, document.createElement('br'));
-    tries.push(value);
-
-  });
-</script>
+  </script>
 </body>
+
 </html>
