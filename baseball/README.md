@@ -86,6 +86,7 @@ $logs.append(
 ```
 
 <hr />
+
 # <h3> 🔗 indexOf, includes
 
 : indexOf와 includes는 배열이나 문자열에 원하는 값이 들어 있는지 찾는 메서드이다.
